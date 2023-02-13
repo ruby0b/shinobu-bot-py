@@ -1,5 +1,5 @@
 import logging
-from collections import AsyncIterator
+from typing import AsyncIterator
 from datetime import datetime, timedelta
 
 import aiohttp

@@ -3,39 +3,20 @@
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
   inputs.flake-utils.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.mach-nix.url = "github:DavHau/mach-nix";
-  inputs.mach-nix.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.mach-nix.inputs.flake-utils.follows = "flake-utils";
 
-  outputs = { self, nixpkgs, flake-utils, mach-nix }:
+  outputs = { self, nixpkgs, flake-utils }:
     (flake-utils.lib.eachDefaultSystem (system:
       let
-        python = "python39";
         pkgs = import nixpkgs { inherit system; };
-        # https://github.com/DavHau/mach-nix/issues/153#issuecomment-717690154
-        mach = import mach-nix { inherit pkgs python; };
-        shinobu-bot = mach.buildPythonApplication {
-          src = ./.;
-          pname = "shinobu-bot";
-          version = "1.0.0";
-          requirements = ''
-            aiohttp[speedups]
-            discord.py[voice]
-            fuzzywuzzy[speedup]
-            feedparser
-            aiocache
-            async-property
-          '';
-        };
       in
-      {
-        packages = { inherit shinobu-bot; };
-        defaultPackage = shinobu-bot;
-        defaultApp = flake-utils.lib.mkApp { drv = shinobu-bot; exePath = "/bin/shinobu-bot.py"; };
-        devShell = mach.mkPythonShell { packagesExtra = [ shinobu-bot ]; };
+      rec {
+        packages.shinobu-bot-py = import ./default.nix { inherit pkgs; };
+        packages.default = packages.shinobu-bot-py;
+        apps.default = flake-utils.lib.mkApp { drv = packages.shinobu-bot-py; exePath = "/bin/shinobu-bot.py"; };
       }))
     // {
-      nixosModules.default = { lib, config, ... }:
+      overlays.default = final: _: { shinobu-bot-py = import ./default.nix { pkgs = final; }; };
+      nixosModules.default = { lib, config, pkgs, ... }:
         let
           inherit (lib) mkOption types mkIf;
           name = "shinobu-bot-py";
@@ -54,7 +35,7 @@
               after = [ "network.target" ];
 
               serviceConfig = {
-                ExecStart = self.defaultApp.x86_64-linux.program;
+                ExecStart = pkgs.shinobu-bot-py;
                 WorkingDirectory = "/var/lib/${cfg.stateDir}";
                 StateDirectory = cfg.stateDir;
                 Restart = "always";

@@ -1,6 +1,5 @@
 import asyncio
-from collections import Sequence, Collection, Mapping, Callable, Awaitable
-from typing import Optional, Union
+from typing import Optional, Union, Sequence, Collection, Mapping, Callable, Awaitable
 
 import discord
 from discord import Color

@@ -11,6 +11,7 @@ def main():
 
     intents = discord.Intents.default()
     intents.members = True
+    intents.message_content = True
     bot = Shinobu(command_prefix=CONSTANTS.CMD_PREFIX, intents=intents)
 
     with open('data/TOKEN') as f:

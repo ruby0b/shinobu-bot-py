@@ -1,7 +1,6 @@
 import random
-from collections import Generator
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Generator
 
 from fuzzywuzzy import process, fuzz
 

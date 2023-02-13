@@ -1,5 +1,5 @@
 import re
-from collections import Iterator
+from typing import Iterator
 
 import aiohttp
 import feedparser

@@ -1,5 +1,4 @@
-from collections import Collection
-from typing import Optional
+from typing import Optional, Collection
 
 import aiohttp
 from discord.ext import commands

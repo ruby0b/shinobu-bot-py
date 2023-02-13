@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import re
 from abc import abstractmethod
-from collections import Iterable
 from datetime import timedelta
 from re import Pattern
-from typing import Optional, Union, Protocol, ClassVar, TypeVar
+from typing import Optional, Union, Protocol, ClassVar, TypeVar, Iterable
 
 import aiohttp
 import discord
-from async_property import async_cached_property
+from utils.async_property import async_cached_property
 
 
 class BaseScraper:
@@ -28,7 +27,8 @@ class BaseScraper:
         if length == 1:
             return matches[0]
         if length > 1:
-            raise ValueError(f"Found multiple matches for '{pattern}' on {self.url}: {matches}")
+            raise ValueError(
+                f"Found multiple matches for '{pattern}' on {self.url}: {matches}")
 
 
 _ContentT = TypeVar('_ContentT', bound='Content')
@@ -47,7 +47,8 @@ class Content(Protocol):
     async def to_embed(self) -> discord.Embed: raise NotImplementedError
 
     @abstractmethod
-    async def calculate_reward(self, amount: int) -> int: raise NotImplementedError
+    async def calculate_reward(
+        self, amount: int) -> int: raise NotImplementedError
 
 
 class _AnimeMangaAgnosticScraper(BaseScraper):
@@ -56,11 +57,11 @@ class _AnimeMangaAgnosticScraper(BaseScraper):
         embed.colour = discord.Colour.dark_blue()
         embed.set_author(name=await self.title, url=self.url)
         if await self.thumbnail:
-            embed.set_thumbnail(url=self.thumbnail)
+            embed.set_thumbnail(url=await self.thumbnail)
         if await self.score:
-            embed.add_field(name='Score', value=self.score)
+            embed.add_field(name='Score', value=await self.score)
         if await self.status:
-            embed.add_field(name='Status', value=self.status)
+            embed.add_field(name='Status', value=await self.status)
         return embed
 
     @async_cached_property
@@ -69,7 +70,7 @@ class _AnimeMangaAgnosticScraper(BaseScraper):
 
     @async_cached_property
     async def thumbnail(self) -> Optional[str]:
-        return await self._safe_single_match(rf'<img(?=.*alt="{self.title}").*src="(.+?)".*>')
+        return await self._safe_single_match(rf'<img(?=.*alt="{await self.title}").*src="(.+?)".*>')
 
     @async_cached_property
     async def score(self) -> Optional[float]:
@@ -110,9 +111,9 @@ class Manga(_AnimeMangaAgnosticScraper, Content):
     async def to_embed(self) -> discord.Embed:
         embed = await super().to_embed()
         if await self.volumes:
-            embed.add_field(name='Volumes', value=self.volumes)
+            embed.add_field(name='Volumes', value=await self.volumes)
         if await self.chapters:
-            embed.add_field(name='Chapters', value=self.chapters)
+            embed.add_field(name='Chapters', value=await self.chapters)
         return embed
 
     @classmethod

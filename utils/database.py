@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import sqlite3
-from collections import defaultdict, Iterator, Generator
+from collections import defaultdict
 from dataclasses import dataclass
 from functools import partial
-from typing import Optional, Union, TypeVar, Any, Final
+from typing import Optional, Union, TypeVar, Any, Final, Iterator, Generator
 
 import discord
 

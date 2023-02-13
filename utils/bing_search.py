@@ -1,7 +1,7 @@
 import asyncio
 
 import re
-from collections import AsyncIterable
+from typing import AsyncIterable
 from re import Match
 from typing import AnyStr, Optional
 from urllib.parse import quote_plus

@@ -8,10 +8,9 @@ setup(
     python_requires='>=3.9',
     install_requires=[
         'aiohttp[speedups]',
-        'discord.py[voice]',
-        'fuzzywuzzy[speedup]',
+        'nextcord',
+        'fuzzywuzzy',
         'feedparser',
         'aiocache',
-        'async-property',
     ],
 )

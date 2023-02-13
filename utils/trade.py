@@ -1,10 +1,10 @@
 import asyncio
 import sqlite3
 from abc import abstractmethod
-from collections import UserList, defaultdict, Callable, Coroutine
+from collections import UserList, defaultdict
 from dataclasses import dataclass
 from functools import partial, wraps
-from typing import Protocol, Final
+from typing import Protocol, Final, Callable, Coroutine
 
 import discord
 
