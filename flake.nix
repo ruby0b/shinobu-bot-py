@@ -35,7 +35,7 @@
               after = [ "network.target" ];
 
               serviceConfig = {
-                ExecStart = pkgs.shinobu-bot-py;
+                ExecStart = "${pkgs.shinobu-bot-py}/bin/shinobu-bot.py";
                 WorkingDirectory = "/var/lib/${cfg.stateDir}";
                 StateDirectory = cfg.stateDir;
                 Restart = "always";
