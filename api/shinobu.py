@@ -3,8 +3,8 @@ import os
 import re
 import traceback
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from api.expected_errors import ExpectedCommandError
 from api.my_context import Context
@@ -24,7 +24,7 @@ class Shinobu(commands.Bot):
         self.reload_all_extensions()
         logger.info(f'Logged on as {self.user}!')
 
-    async def on_member_join(self, _: discord.Member):
+    async def on_member_join(self, _: nextcord.Member):
         self.update_user_database()
 
     def update_user_database(self):

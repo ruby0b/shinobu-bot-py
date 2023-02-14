@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from contextlib import AsyncExitStack
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from api.expected_errors import ExpectedCommandError
 from api.my_context import Context
@@ -29,9 +29,9 @@ class Trade(commands.Cog):
 
     @trade.command(name='sign', aliases=['s'])
     @require
-    async def trade_sign(self, ctx: Context, *signers: discord.User):
+    async def trade_sign(self, ctx: Context, *signers: nextcord.User):
         """Execute the transactions of every specified signer including yourself"""
-        signers: set[discord.User] = {ctx.author, *signers}
+        signers: set[nextcord.User] = {ctx.author, *signers}
         async with AsyncExitStack() as stack:
             for s in signers:
                 await stack.enter_async_context(CHANGES[s].lock)

@@ -1,9 +1,9 @@
 import asyncio
 from typing import Optional, Union, Sequence, Collection, Mapping, Callable, Awaitable
 
-import discord
-from discord import Color
-from discord.ext import commands
+import nextcord
+from nextcord import Color
+from nextcord.ext import commands
 
 from api.expected_errors import ExpectedCommandError
 from data.CONSTANTS import NO, YES, PRINTER, DOWN, UP
@@ -18,21 +18,21 @@ class Context(commands.Context):
             raise ValueError('Title must be 256 or fewer in length')
         if len(kwargs.get('description', ())) > 2048:
             raise ValueError('Description must be 2048 or fewer in length')
-        return await self.send(content, embed=discord.Embed(color=color, **kwargs))
+        return await self.send(content, embed=nextcord.Embed(color=color, **kwargs))
 
     async def info(self, description: Optional[str] = None, content: Optional[str] = None, **kwargs):
-        return await self.send_embed(discord.Color.green(), description, content, **kwargs)
+        return await self.send_embed(nextcord.Color.green(), description, content, **kwargs)
 
     async def warn(self, description: Optional[str] = None, content: Optional[str] = None, **kwargs):
-        return await self.send_embed(discord.Color.orange(), description, content, **kwargs)
+        return await self.send_embed(nextcord.Color.orange(), description, content, **kwargs)
 
     async def error(self, description: Optional[str] = None, content: Optional[str] = None, **kwargs):
-        return await self.send_embed(discord.Color.red(), description, content, **kwargs)
+        return await self.send_embed(nextcord.Color.red(), description, content, **kwargs)
 
-    async def confirm(self, msg: discord.Message, users: set[discord.User] = None, **kwargs) -> bool:
+    async def confirm(self, msg: nextcord.Message, users: set[nextcord.User] = None, **kwargs) -> bool:
         users = users or set()
 
-        async def yes(reaction: discord.Reaction, **_):
+        async def yes(reaction: nextcord.Reaction, **_):
             if users.issubset(await reaction.users().flatten()):
                 return True
 
@@ -41,14 +41,14 @@ class Context(commands.Context):
 
         return bool(await self.reaction_buttons(msg, {YES: yes, NO: no}, users=users, **kwargs))
 
-    async def reaction_buttons(self, msg: discord.Message,
+    async def reaction_buttons(self, msg: nextcord.Message,
                                reactions: Mapping[str, Callable[..., Awaitable]],
-                               *, users: Collection[discord.User] = (), timeout: int = 300):
+                               *, users: Collection[nextcord.User] = (), timeout: int = 300):
         users = users or [self.author]
         for r in reactions:
             await msg.add_reaction(r)
 
-        def any_user_answered(reaction: discord.Reaction, user: discord.User) -> bool:
+        def any_user_answered(reaction: nextcord.Reaction, user: nextcord.User) -> bool:
             return (reaction.message.id == msg.id
                     and user in users
                     and str(reaction.emoji) in reactions)
@@ -73,7 +73,7 @@ class Context(commands.Context):
                         # Remove the user's reaction if possible in case they want to click it again
                         try:
                             await reaction.remove(user)
-                        except (discord.Forbidden, discord.NotFound):
+                        except (nextcord.Forbidden, nextcord.NotFound):
                             pass
 
                     if ret is not None:
@@ -83,14 +83,14 @@ class Context(commands.Context):
             try:
                 # Clear the reactions since clicking them no longer does anything
                 await msg.clear_reactions()
-            except (discord.Forbidden, discord.NotFound):
+            except (nextcord.Forbidden, nextcord.NotFound):
                 pass
 
     async def send_paginated(self, content: str, prefix: str = '', suffix: str = '', **kwargs):
         pages = list(paginate(content, prefix=prefix, suffix=suffix))
         await self.send_pager(pages, **kwargs)
 
-    async def send_pager(self, pages: Sequence[str], *, users: Collection[discord.User] = (), timeout: int = 600):
+    async def send_pager(self, pages: Sequence[str], *, users: Collection[nextcord.User] = (), timeout: int = 600):
         i = 0
         msg = await self.send(pages[i])
 
@@ -116,12 +116,12 @@ class Context(commands.Context):
         await self.reaction_buttons(msg, users=users, timeout=timeout,
                                     reactions={UP: up, DOWN: down, PRINTER: printer})
 
-    async def quick_question(self, question: str, user: Optional[discord.User] = None, delete_answer: bool = True
+    async def quick_question(self, question: str, user: Optional[nextcord.User] = None, delete_answer: bool = True
                              ) -> Optional[str]:
         user = user or self.author
         question_msg = await self.info(question)
 
-        def check(m: discord.Message):
+        def check(m: nextcord.Message):
             return m.channel == self.channel and m.author == user
 
         try:
@@ -133,11 +133,11 @@ class Context(commands.Context):
             if delete_answer:
                 try:
                     await answer.delete()
-                except (discord.Forbidden, discord.NotFound):
+                except (nextcord.Forbidden, nextcord.NotFound):
                     pass
             return content
         finally:
             try:
                 await question_msg.delete()
-            except (discord.Forbidden, discord.NotFound):
+            except (nextcord.Forbidden, nextcord.NotFound):
                 pass

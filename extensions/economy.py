@@ -3,8 +3,8 @@ from typing import AsyncIterator
 from datetime import datetime, timedelta
 
 import aiohttp
-import discord
-from discord.ext import commands, tasks
+import nextcord
+from nextcord.ext import commands, tasks
 
 from api.my_context import Context
 from api.shinobu import Shinobu
@@ -33,8 +33,8 @@ class Economy(commands.Cog):
             with db:
                 db.execute('UPDATE user SET balance=balance+100, birthday=? WHERE id=?',
                            [add_years(user_row.birthday, 1), user_row.id])
-            user: discord.User = self.bot.get_user(user_row.id)
-            announcement_channel: discord.TextChannel = self.bot.get_channel(ANNOUNCEMENT_CHANNEL_ID)
+            user: nextcord.User = self.bot.get_user(user_row.id)
+            announcement_channel: nextcord.TextChannel = self.bot.get_channel(ANNOUNCEMENT_CHANNEL_ID)
             await announcement_channel.send(f'🎉🎉🎉  Happy Birthday {user.mention}!  🎉🎉🎉'
                                             f'\nAs a present, you get 100 {CURRENCY}!')
             logger.info(f'gifted 100 to {user.name} as a birthday present!')

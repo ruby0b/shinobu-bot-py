@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from functools import partial, wraps
 from typing import Protocol, Final, Callable, Coroutine
 
-import discord
+import nextcord
 
 from api.expected_errors import ExpectedCommandError
 from api.my_context import Context
@@ -80,7 +80,7 @@ class LockedList(UserList):
         self.lock = asyncio.Lock()
 
 
-CHANGES: Final[defaultdict[discord.User, LockedList]] = defaultdict(LockedList)
+CHANGES: Final[defaultdict[nextcord.User, LockedList]] = defaultdict(LockedList)
 
 
 def forbid(func: Callable[..., Coroutine]):

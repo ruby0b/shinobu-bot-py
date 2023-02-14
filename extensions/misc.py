@@ -1,7 +1,7 @@
 import random
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from api import shinobu
 from api.my_context import Context
@@ -9,7 +9,7 @@ from api.my_context import Context
 
 class Misc(commands.Cog):
     @commands.command()
-    async def blame(self, ctx: Context, user: discord.User):
+    async def blame(self, ctx: Context, user: nextcord.User):
         """Blame someone."""
         await ctx.send(f'Blame {user.mention} for everything!')
 

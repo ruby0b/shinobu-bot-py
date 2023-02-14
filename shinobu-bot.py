@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import discord
+import nextcord
 
 from data import CONSTANTS
 from api.shinobu import Shinobu
@@ -9,7 +9,7 @@ from utils.setup_logging import setup_logging
 def main():
     setup_logging()
 
-    intents = discord.Intents.default()
+    intents = nextcord.Intents.default()
     intents.members = True
     intents.message_content = True
     bot = Shinobu(command_prefix=CONSTANTS.CMD_PREFIX, intents=intents)

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Optional, Union, TypeVar, Any, Final, Iterator, Generator
 
-import discord
+import nextcord
 
 from api.expected_errors import ExpectedCommandError
 from data.CONSTANTS import DB_PATH
@@ -121,8 +121,8 @@ class Waifu(RowData):
     rarity: NonObligatory[Rarity] = UNAVAILABLE
     user: NonObligatory[User] = UNAVAILABLE
 
-    def to_embed(self) -> discord.Embed:
-        embed = discord.Embed(color=self.rarity.colour,
+    def to_embed(self) -> nextcord.Embed:
+        embed = nextcord.Embed(color=self.rarity.colour,
                               title=f'{self.character.name} [{self.character.series}]',
                               description=f"**{self.rarity.name}**")
         if self.character.image_url:

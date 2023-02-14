@@ -7,7 +7,7 @@ from re import Pattern
 from typing import Optional, Union, Protocol, ClassVar, TypeVar, Iterable
 
 import aiohttp
-import discord
+import nextcord
 from utils.async_property import async_cached_property
 
 
@@ -44,7 +44,7 @@ class Content(Protocol):
     def from_id(cls, id_: int) -> _ContentT: raise NotImplementedError
 
     @abstractmethod
-    async def to_embed(self) -> discord.Embed: raise NotImplementedError
+    async def to_embed(self) -> nextcord.Embed: raise NotImplementedError
 
     @abstractmethod
     async def calculate_reward(
@@ -52,9 +52,9 @@ class Content(Protocol):
 
 
 class _AnimeMangaAgnosticScraper(BaseScraper):
-    async def to_embed(self) -> discord.Embed:
-        embed = discord.Embed()
-        embed.colour = discord.Colour.dark_blue()
+    async def to_embed(self) -> nextcord.Embed:
+        embed = nextcord.Embed()
+        embed.colour = nextcord.Colour.dark_blue()
         embed.set_author(name=await self.title, url=self.url)
         if await self.thumbnail:
             embed.set_thumbnail(url=await self.thumbnail)
@@ -108,7 +108,7 @@ class Manga(_AnimeMangaAgnosticScraper, Content):
     rss_types = {'rrm', 'rm'}
     consumed_regex = re.compile(r'.*- (\d+) of .* chapters')
 
-    async def to_embed(self) -> discord.Embed:
+    async def to_embed(self) -> nextcord.Embed:
         embed = await super().to_embed()
         if await self.volumes:
             embed.add_field(name='Volumes', value=await self.volumes)

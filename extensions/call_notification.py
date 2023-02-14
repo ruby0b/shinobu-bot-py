@@ -1,7 +1,7 @@
 import time
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from api import shinobu
 from utils import database
@@ -19,9 +19,9 @@ class CallNotification(commands.Cog):
         }
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member,
-                                    before: discord.VoiceState,
-                                    after: discord.VoiceState):
+    async def on_voice_state_update(self, member: nextcord.Member,
+                                    before: nextcord.VoiceState,
+                                    after: nextcord.VoiceState):
         """Notifies certain channels when someone starts a call"""
         if (time.time() < self.last_used + self.COOLDOWN_TIME
             or after.channel is None
@@ -29,13 +29,13 @@ class CallNotification(commands.Cog):
             or len(after.channel.members) > 1
             or after.channel.id not in self.voiceid_to_textid
             ): return
-        text_channel = discord.utils.get(
+        text_channel = nextcord.utils.get(
             member.guild.channels,
             id=self.voiceid_to_textid[after.channel.id]
         )
-        await text_channel.send(embed=discord.Embed(
+        await text_channel.send(embed=nextcord.Embed(
             description=f"{member.mention} started a call.",
-            colour=discord.Colour.green()
+            colour=nextcord.Colour.green()
         ))
         self.last_used = time.time()
 

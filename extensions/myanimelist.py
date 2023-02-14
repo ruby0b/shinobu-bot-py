@@ -1,7 +1,7 @@
 from typing import Optional, Collection
 
 import aiohttp
-from discord.ext import commands
+from nextcord.ext import commands
 
 from api.expected_errors import ExpectedCommandError
 from api.my_context import Context

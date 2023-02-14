@@ -1,8 +1,8 @@
 import logging
 from typing import Union
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 import utils.trade
 from api.my_context import Context
@@ -44,7 +44,7 @@ class Shop(commands.Cog):
         else:
             packs = Pack.select_many(db, f'SELECT * FROM pack WHERE {CURRENT_PREDICATE}')
 
-            embed = discord.Embed(colour=discord.Colour.gold())
+            embed = nextcord.Embed(colour=nextcord.Colour.gold())
             for p in packs:
                 end_date_str = f" (Available until {p.end_date})" if p.end_date else ''
                 embed.add_field(name=f"{p.name} - {p.cost} {CURRENCY}{end_date_str}", value=p.description, inline=False)
@@ -52,7 +52,7 @@ class Shop(commands.Cog):
             await ctx.send(embed=embed)
 
     @staticmethod
-    async def maybe_to_user(ctx: commands.Context, argument: str) -> Union[discord.User, str]:
+    async def maybe_to_user(ctx: commands.Context, argument: str) -> Union[nextcord.User, str]:
         try:
             return await commands.UserConverter().convert(ctx, argument)
         except (commands.BadArgument, IndexError):
@@ -65,7 +65,7 @@ class Shop(commands.Cog):
         """List waifus if you give no search terms. Otherwise display the waifu matching your query."""
         query = ' '.join(search_terms)
         maybe_user = await self.maybe_to_user(ctx, user)
-        if isinstance(maybe_user, discord.User):
+        if isinstance(maybe_user, nextcord.User):
             user = maybe_user
         else:
             user = ctx.author
@@ -87,7 +87,7 @@ class Shop(commands.Cog):
             await ctx.send_paginated(waifu_str, prefix='```md\n', suffix='```')
 
     @staticmethod
-    def income_msg(db: DB, discord_user: discord.User, db_user: User, is_author: bool):
+    def income_msg(db: DB, discord_user: nextcord.User, db_user: User, is_author: bool):
         income, new_last_withdrawal = income_and_new_last_withdrawal(db_user)
 
         if not income:
@@ -107,16 +107,17 @@ class Shop(commands.Cog):
     async def user(self, ctx: Context, user: str = ''):
         """Show information about a user."""
         maybe_user = await self.maybe_to_user(ctx, user)
-        user = maybe_user if isinstance(maybe_user, discord.User) else ctx.author
+        user = maybe_user if isinstance(maybe_user, nextcord.User) else ctx.author
 
         db = database.connect()
         db_user = User.select_one(db, 'SELECT * FROM user WHERE id=?', [user.id])
 
-        embed = discord.Embed(color=discord.colour.Colour.blue(),  # todo custom color
+        embed = nextcord.Embed(color=nextcord.colour.Colour.blue(),  # todo custom color
                               title=f'{user}',
                               # description=f"**{self.rarity.name}**" todo custom description
                               )
-        embed.set_thumbnail(url=str(user.avatar_url))
+        if user.avatar:
+            embed.set_thumbnail(url=str(user.avatar.url))
         embed.add_field(name='Balance', value=self.income_msg(db, user, db_user, user == ctx.author))
         db.close()
         msg = await ctx.send(embed=embed)
